@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template
 from pyspark.sql.functions import sum, desc, col, avg
 
@@ -99,4 +101,5 @@ def get_transaction_by_country():
 
 
 if __name__ == "__main__":
-    app.run(debug=True,)
+    os.system('jupyter notebook --no-browser')
+    app.run(debug=True, )
