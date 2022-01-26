@@ -24,7 +24,7 @@ python3 populate_database.py
 ```bash
 python3 flask_app.py
 ```
-this would run the 3 needed containers(mongodb, spark master, spark worker), create a database and collection on mongodb populate it with the excel data, then run the flask server.
+this would run the 3 needed containers(mongodb, spark master, spark worker), create a database and collection on mongodb and populate it with the excel data, then run the flask server.
 
 open a browser and navigate to ```172.0.0.1:5000```
 
