@@ -1,0 +1,15 @@
+<html>
+<h2>
+    Click the country so see a chart of product distribution for the
+    corresponding
+    country
+</h2>
+<ul>
+    {% for country in countries %}
+        <li>
+            <a href="/products_by_country_distribution/{{ country }}">{{ country }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+</html>
