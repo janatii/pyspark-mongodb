@@ -1,6 +1,7 @@
 import docker
 import pyspark
 from pyspark import SparkContext, SQLContext
+from pyspark.sql import SparkSession
 
 
 def is_container_running(container_name):
@@ -29,6 +30,13 @@ def get_mymongo_container_ip():
 
 
 def create_spark_session(app_name, db_name, collection_name):
+    '''
+    create a SQL session between spark and mongodb collection,
+    app_name: str
+    db_name: str
+    collection_name: str
+    return SperkSession Object
+    '''
     is_container_running('my_spark_master')
     is_container_running('my_spark_worker')
     mongo_uri = f'mongodb://localhost/{db_name}.{collection_name}'
@@ -37,8 +45,9 @@ def create_spark_session(app_name, db_name, collection_name):
         'org.mongodb.spark:mongo-spark-connector_2.12:3.0.1'
     ).setMaster('local').setAppName(app_name).setAll(
         [('spark.driver.memory', '40g'), ('spark.executor.memory', '50g')])
-    sc = SparkContext(conf=conf)
-    sqlc = SQLContext(sc)
+    sc = SparkContext.getOrCreate(conf)
+    ss = SparkSession.builder.getOrCreate()
+    sqlc = SQLContext(sc, ss)
     online_retail = sqlc.read.format('com.mongodb.spark.sql.DefaultSource'
                                      ).option('uri', mongo_uri).load()
     online_retail.createOrReplaceTempView('online_retail')

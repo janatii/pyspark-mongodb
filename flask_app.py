@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask, render_template
+from pyspark.sql import functions as F
 from pyspark.sql.functions import sum, desc, col, avg
 
 from utils import create_spark_session
@@ -12,6 +13,26 @@ app = Flask(__name__, template_folder='templates')  # still relative to module
 @app.route("/")
 def index():
     return render_template('index.html')
+
+
+@app.route('/group_by_invoice')
+def get_grouped_by_invoice():
+    spark = create_spark_session(__name__, 'mydata', 'online_retail')
+    try:
+        df = spark.sql('select * from online_retail')
+        result = df.groupBy('InvoiceNo').agg(F.collect_set('CustomerID'),
+                                             F.collect_set('Description'),
+                                             F.collect_set('InvoiceDate'),
+                                             F.collect_set('Quantity'),
+                                             F.collect_set('StockCode'),
+                                             F.collect_set('UnitPrice'),
+                                             ).collect()
+        ret = {}
+        for row in result:
+            ret[row[0]] = row[1:]
+        return ret
+    finally:
+        spark.stop()
 
 
 @app.route("/popular_product")
@@ -101,5 +122,11 @@ def get_transaction_by_country():
 
 
 if __name__ == "__main__":
-    # os.system('jupyter notebook --no-browser')
+    try:
+        os.system('jupyter notebook --no-browser')
+    except Exception as e:
+        '''
+        server already running
+        '''
+        pass
     app.run(debug=True, )
