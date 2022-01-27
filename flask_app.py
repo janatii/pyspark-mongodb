@@ -101,5 +101,5 @@ def get_transaction_by_country():
 
 
 if __name__ == "__main__":
-    os.system('jupyter notebook --no-browser')
+    # os.system('jupyter notebook --no-browser')
     app.run(debug=True, )
